@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-13T23:59:31.288Z",
+  "en": {
+    "title": "Hearthmakers Prototype",
+    "description": "Hearthmakers prototype gallery."
+  },
+  "pt-BR": {
+    "title": "Protótipo Hearthmakers",
+    "description": "Álbum de imagens do protótipo do Hearthmakers!"
+  },
+  "categories": [],
+  "pictures": [
+    {
+      "file": "2-temperate.png",
+      "en": "Forest",
+      "pt-BR": "Floresta",
+      "descriptions": {
+        "en": "Forest biome. Basic version.",
+        "pt-BR": "Bioma de floresta do jogo. Versão inicial."
+      },
+      "category": null
+    },
+    {
+      "file": "3-desert.png",
+      "en": "Desert",
+      "pt-BR": "Deserto",
+      "descriptions": {
+        "en": "Desert biome. Basic version.",
+        "pt-BR": "Bioma de deserto do jogo. Versão inicial."
+      },
+      "category": null
+    },
+    {
+      "file": "4-arctic.png",
+      "en": "Snow",
+      "pt-BR": "Ártico",
+      "descriptions": {
+        "en": "Snow biome. Basic version.",
+        "pt-BR": "Bioma de gelo do jogo. Versão inicial."
+      },
+      "category": null
+    }
+  ]
+}
