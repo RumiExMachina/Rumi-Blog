@@ -1,0 +1,729 @@
+/*
+ * The Hearthmakers theme, in the look of the game's own page: the same tokens
+ * as the game's ui/theme.ts, and boards, signs and parchment painted at each
+ * element's size by the game's painter (paint.js). Flat fills, right angles
+ * and black outlines; nothing here is an image of a panel.
+ *
+ * The editor's preview shows these pages inside a root of its own, so the
+ * tokens are set on `:host` too, and what answers to the screen's width asks
+ * the page's own (`@container`), not the window's.
+ */
+
+@font-face {
+  font-family: 'Alegreya';
+  src: url('fonts/Alegreya-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Alegreya';
+  src: url('fonts/Alegreya-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Alegreya';
+  src: url('fonts/Alegreya-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* The pixel font's digits blur when small (its 5 reads as an S): numbers come from here, as in the game. */
+@font-face {
+  font-family: 'Numbers';
+  src: url('fonts/Alegreya-Bold.ttf') format('truetype');
+  unicode-range: U+25, U+2B, U+2F, U+30-3A;
+  size-adjust: 120%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pixelify Sans';
+  src: url('fonts/PixelifySans-Regular.woff2') format('woff2');
+  font-display: swap;
+}
+
+:root,
+:host {
+  --ink: #2b1f14;
+  --ink-soft: #57432d;
+  --ink-accent: #8a5a1c;
+  --paper: #c8b48a;
+  --paper-light: #e6dcc8;
+  --paper-line: #b08858;
+  --menu-gold: #e8c860;
+  --menu-active: #e6dcc8;
+  --control-gold-light: #ffe156;
+  --wood-frame: #766858;
+  --wood-light: #a6957e;
+  --wood-dark: #5e5246;
+  --board: #3a3432;
+  --plaque: #3a2a1c;
+  --plaque-lip: #4a3624;
+  --text-muted: #a39a86;
+  --font: 'Alegreya', Georgia, serif;
+  --control-font: 'Numbers', 'Pixelify Sans', var(--font);
+  --outline: -2px -2px 0 #000, 0 -2px 0 #000, 2px -2px 0 #000, 2px 0 0 #000, 2px 2px 0 #000, 0 2px 0 #000, -2px 2px 0 #000, -2px 0 0 #000;
+  --outline-thin: -1px -1px 0 #000, 0 -1px 0 #000, 1px -1px 0 #000, 1px 0 0 #000, 1px 1px 0 #000, 0 1px 0 #000, -1px 1px 0 #000, -1px 0 0 #000;
+  --page-width: 1140px;
+  --text-width: 860px;
+  --button-height: 52px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #1b1c3b;
+}
+
+/* The page: everything that's read. Its width is what the narrower layouts ask about. */
+.page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  container-type: inline-size;
+  font: 400 19px/1.5 var(--font);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* In the editor's preview the page scrolls inside its own frame, the dusk and the sparks still behind it. */
+:host {
+  display: block;
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+:host .page {
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+main {
+  flex: 1;
+}
+
+/* The dusk the book floats in, fixed behind the whole page. */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: linear-gradient(180deg, #1b1c3b 0%, #2c2547 34%, #5e3f5a 66%, #9c6462 88%, #c58a68 100%);
+}
+
+/* Sparks rising from the hearth, over the backdrop and under the content. */
+.embers {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+:host .backdrop,
+:host .embers {
+  position: absolute;
+  z-index: 0;
+}
+
+:host .page {
+  z-index: 1;
+}
+
+.embers span {
+  position: absolute;
+  bottom: -12px;
+  left: var(--x);
+  width: var(--size, 4px);
+  height: var(--size, 4px);
+  background: #ffcf4a;
+  box-shadow: 0 0 6px 2px rgba(255, 140, 30, 0.8);
+  opacity: 0;
+  animation: ember-rise var(--time, 9s) linear var(--delay, 0s) infinite;
+}
+
+.embers span:nth-child(1) { --x: 0%; --size: 5px; --time: 9s; --delay: -2.9s; --sway: 28px; }
+.embers span:nth-child(2) { --x: 6.4%; --size: 3px; --time: 12.3s; --delay: -10.6s; --sway: 5px; }
+.embers span:nth-child(3) { --x: 11.2%; --size: 4px; --time: 12.7s; --delay: -3.4s; --sway: -15px; }
+.embers span:nth-child(4) { --x: 15.4%; --size: 4px; --time: 7.4s; --delay: -9.6s; --sway: -4px; }
+.embers span:nth-child(5) { --x: 20.5%; --size: 4px; --time: 7.9s; --delay: -7.2s; --sway: 51px; }
+.embers span:nth-child(6) { --x: 23.7%; --size: 4px; --time: 11s; --delay: -12.8s; --sway: 49px; }
+.embers span:nth-child(7) { --x: 26.6%; --size: 3px; --time: 12.9s; --delay: -4.7s; --sway: -42px; }
+.embers span:nth-child(8) { --x: 30.4%; --size: 3px; --time: 9.1s; --delay: -13.1s; --sway: 7px; }
+.embers span:nth-child(9) { --x: 36.4%; --size: 5px; --time: 7.4s; --delay: -3.8s; --sway: 7px; }
+.embers span:nth-child(10) { --x: 39.6%; --size: 3px; --time: 8.4s; --delay: -12.7s; --sway: -53px; }
+.embers span:nth-child(11) { --x: 43.2%; --size: 3px; --time: 11.7s; --delay: -12.9s; --sway: 2px; }
+.embers span:nth-child(12) { --x: 46.5%; --size: 3px; --time: 9s; --delay: -5.1s; --sway: -9px; }
+.embers span:nth-child(13) { --x: 51.4%; --size: 4px; --time: 11.3s; --delay: -3.3s; --sway: 49px; }
+.embers span:nth-child(14) { --x: 56.1%; --size: 5px; --time: 11.4s; --delay: -8.9s; --sway: 2px; }
+.embers span:nth-child(15) { --x: 60.4%; --size: 4px; --time: 13.6s; --delay: -5.6s; --sway: 25px; }
+.embers span:nth-child(16) { --x: 63.5%; --size: 4px; --time: 9.5s; --delay: -4.6s; --sway: -13px; }
+.embers span:nth-child(17) { --x: 70%; --size: 5px; --time: 7.8s; --delay: -11.5s; --sway: -51px; }
+.embers span:nth-child(18) { --x: 72.5%; --size: 2px; --time: 7.5s; --delay: -13.9s; --sway: -34px; }
+.embers span:nth-child(19) { --x: 77.6%; --size: 2px; --time: 10.2s; --delay: -8.3s; --sway: -43px; }
+.embers span:nth-child(20) { --x: 83%; --size: 5px; --time: 13.2s; --delay: -12.4s; --sway: 49px; }
+.embers span:nth-child(21) { --x: 86.5%; --size: 3px; --time: 7.1s; --delay: -3.5s; --sway: -51px; }
+.embers span:nth-child(22) { --x: 87.5%; --size: 4px; --time: 8.6s; --delay: -10.4s; --sway: -1px; }
+.embers span:nth-child(23) { --x: 94.5%; --size: 3px; --time: 13.2s; --delay: -3.3s; --sway: -15px; }
+.embers span:nth-child(24) { --x: 99.6%; --size: 2px; --time: 10.4s; --delay: 0s; --sway: 50px; }
+
+@keyframes ember-rise {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  50% {
+    transform: translate(var(--sway, 30px), -55vh);
+  }
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(0, -110vh);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .embers {
+    display: none;
+  }
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 3px solid var(--control-gold-light);
+  outline-offset: 2px;
+}
+
+/* Scrollbars as in the game: a square dark thumb on a shaded track. */
+::-webkit-scrollbar {
+  width: 16px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #322f28;
+  border: 2px solid #000;
+}
+
+/* --- painted pieces: the flat colour until the painter has run ---------------- */
+
+.board,
+.section-title,
+.parchment {
+  image-rendering: pixelated;
+  background-position: 0 0;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.board.painted,
+.section-title.painted,
+.parchment.painted {
+  background-color: transparent;
+  background-image: var(--painted);
+}
+
+/* A board: its field sits inside the frame, above the ledge and the slab. */
+.board {
+  padding: 30px 36px 54px;
+  background-color: var(--board);
+  color: var(--paper-light);
+}
+
+/* The shingle a title hangs on, its text in the wheat of the menus. */
+.section-title {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
+  min-width: min(440px, 100%);
+  min-height: 96px;
+  margin: 0 auto 28px;
+  /* Inside the shingle's painted frame, however many lines the title takes. */
+  padding: 33px 36px 27px;
+  background-color: var(--board);
+  font: 400 32px/1.15 var(--control-font);
+  letter-spacing: 0.02em;
+  color: var(--menu-gold);
+  text-shadow: var(--outline);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* The wooden beam each shingle's hooks hang from, wider than the shingle. */
+.section-title::before {
+  content: '';
+  position: absolute;
+  top: -15px;
+  left: -27px;
+  right: -27px;
+  height: 18px;
+  border: 3px solid #000;
+  background: var(--wood-frame);
+  box-shadow: inset 0 3px 0 var(--wood-light), inset 0 -3px 0 var(--wood-dark), 0 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Parchment: the content stays inside its stepped line. */
+.parchment {
+  padding: 30px 36px 42px;
+  background-color: var(--paper);
+  color: var(--ink);
+}
+
+.parchment a {
+  color: var(--ink-accent);
+}
+
+/* The game's buttons as links: a wooden frame, a black line, a flat face. */
+.secondary,
+.parchment a.secondary {
+  --face: var(--plaque);
+  --face-lip: var(--plaque-lip);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--button-height);
+  padding: 9px 22px 3px;
+  border: 3px solid #000;
+  background: var(--face);
+  box-shadow:
+    inset 0 3px 0 var(--wood-light),
+    inset 0 -3px 0 var(--wood-dark),
+    inset 0 0 0 3px var(--wood-frame),
+    inset 0 0 0 6px #000,
+    inset 0 9px 0 var(--face-lip);
+  font: 400 21px/1.1 var(--control-font);
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  text-align: center;
+  color: var(--menu-gold);
+  text-shadow: var(--outline-thin);
+  transition: transform 0.12s ease;
+}
+
+.secondary:hover,
+.parchment a.secondary:hover {
+  color: var(--menu-active);
+  filter: brightness(1.12);
+}
+
+.secondary:active {
+  transform: translateY(1px);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+/* A picture, in the same frame as the HUD's parts. */
+.shot {
+  display: block;
+  border: 3px solid #000;
+  background: #000;
+  box-shadow: 0 0 0 3px var(--wood-frame), 0 0 0 6px #000, 0 18px 30px rgba(0, 0, 0, 0.45);
+  margin: 6px;
+}
+
+.shot img {
+  width: 100%;
+  height: auto;
+}
+
+/* --- top bar ------------------------------------------------------------------ */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--board);
+  border-bottom: 3px solid #000;
+  box-shadow: inset 0 -3px 0 var(--wood-frame), inset 0 -6px 0 #000, 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: 10px 16px 16px;
+}
+
+.logo {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font: 400 25px/1.1 var(--control-font);
+  color: var(--menu-gold);
+  text-shadow: var(--outline);
+}
+
+.logo img {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  image-rendering: pixelated;
+}
+
+.logo:hover,
+.lang:hover {
+  color: var(--menu-active);
+}
+
+/* The other language, on a small plaque. */
+.lang {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 3px solid #000;
+  background: var(--plaque);
+  box-shadow: inset 0 0 0 3px var(--wood-frame), inset 0 0 0 6px #000;
+  font: 400 18px/1 var(--control-font);
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  color: var(--menu-gold);
+  text-shadow: var(--outline-thin);
+}
+
+/* --- pages of posts ------------------------------------------------------------- */
+
+.section {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: 72px 16px 0;
+}
+
+/* What the blog is, under its sign, on the dusk itself. */
+.blog-lead {
+  max-width: var(--text-width);
+  margin: -6px auto 30px;
+  text-align: center;
+  font-style: italic;
+  font-size: 22px;
+  color: var(--menu-gold);
+  text-shadow: var(--outline-thin);
+}
+
+.lead {
+  max-width: var(--text-width);
+  margin: 0 auto;
+  font-size: 21px;
+}
+
+.lead p {
+  margin: 0;
+}
+
+.posts {
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+  max-width: var(--text-width);
+  margin: 0 auto;
+}
+
+/* A post in a list: its card, with its cover beside it when it has one. */
+.post-card.with-cover {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  align-items: center;
+  gap: 24px;
+}
+
+.post-card .shot {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+}
+
+.post-card .shot img {
+  height: 100%;
+  object-fit: cover;
+}
+
+.post-card h2 {
+  margin: 0 0 8px;
+  font: 400 27px/1.2 var(--control-font);
+  letter-spacing: 0.01em;
+  overflow-wrap: anywhere;
+}
+
+.post-card h2 a,
+.parchment .post-card h2 a {
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.post-card h2 a:hover {
+  color: var(--ink-accent);
+}
+
+.post-card p {
+  margin: 0 0 14px;
+}
+
+/* A post's day and its tags. On parchment the day is ink; on the dusk, under a post's sign, wheat. */
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.post-meta time {
+  margin-right: 4px;
+}
+
+.article > .post-meta {
+  justify-content: center;
+  margin: -10px 0 26px;
+  color: var(--menu-gold);
+  text-shadow: var(--outline-thin);
+}
+
+/* A tag: a small plaque. */
+.tag,
+.parchment a.tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 3px 10px 0;
+  border: 3px solid #000;
+  background: var(--plaque);
+  box-shadow: inset 0 3px 0 var(--plaque-lip);
+  font: 400 16px/1 var(--control-font);
+  font-style: normal;
+  text-decoration: none;
+  color: var(--menu-gold);
+  text-shadow: var(--outline-thin);
+}
+
+.tag:hover {
+  color: var(--menu-active);
+}
+
+/* --- a post's own page ---------------------------------------------------------- */
+
+.article {
+  max-width: calc(var(--text-width) + 32px);
+}
+
+.article .cover {
+  margin: 6px 6px 30px;
+}
+
+.markdown {
+  padding: 36px 42px 48px;
+  font-size: 19px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.markdown > :first-child {
+  margin-top: 0;
+}
+
+.markdown > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown p,
+.markdown ul,
+.markdown ol,
+.markdown blockquote,
+.markdown pre,
+.markdown table {
+  margin: 0 0 16px;
+}
+
+.markdown ul,
+.markdown ol {
+  padding-left: 26px;
+}
+
+.markdown li {
+  margin: 0 0 4px;
+}
+
+.markdown li > p {
+  margin: 0;
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4 {
+  margin: 28px 0 10px;
+  font: 400 25px/1.25 var(--control-font);
+  color: var(--ink-soft);
+}
+
+.markdown h1 {
+  font-size: 29px;
+}
+
+.markdown h3,
+.markdown h4 {
+  font-size: 21px;
+}
+
+.markdown blockquote {
+  padding: 8px 16px;
+  border-left: 4px solid var(--wood-frame);
+  background: rgba(0, 0, 0, 0.06);
+  font-style: italic;
+}
+
+.markdown blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown code {
+  padding: 1px 5px;
+  background: rgba(0, 0, 0, 0.08);
+  font: 16px ui-monospace, Consolas, monospace;
+}
+
+.markdown pre {
+  padding: 12px 14px;
+  overflow-x: auto;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.markdown pre code {
+  padding: 0;
+  background: none;
+}
+
+.markdown hr {
+  margin: 22px 0;
+  border: 0;
+  border-top: 2px solid var(--paper-line);
+}
+
+/* A picture in the text, framed as a picture of the game. */
+.markdown img {
+  max-width: calc(100% - 12px);
+  margin: 12px auto;
+  border: 3px solid #000;
+  box-shadow: 0 0 0 3px var(--wood-frame), 0 0 0 6px #000;
+}
+
+.markdown table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.markdown th,
+.markdown td {
+  padding: 6px 12px;
+  border: 2px solid var(--paper-line);
+  text-align: left;
+}
+
+.markdown th {
+  font: 400 18px var(--control-font);
+  color: var(--ink-soft);
+}
+
+/* --- footer -------------------------------------------------------------------- */
+
+.footer {
+  margin-top: 90px;
+  padding: 26px 16px;
+  background: var(--board);
+  border-top: 3px solid #000;
+  box-shadow: inset 0 3px 0 var(--wood-frame), inset 0 6px 0 #000;
+  text-align: center;
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+.footer p {
+  margin: 4px 0;
+}
+
+.footer a {
+  color: var(--menu-gold);
+}
+
+/* --- a narrower page ------------------------------------------------------------ */
+
+@container (max-width: 820px) {
+  .post-card.with-cover {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+@container (max-width: 720px) {
+  .section {
+    padding-top: 56px;
+    font-size: 18px;
+  }
+
+  .logo {
+    font-size: 21px;
+  }
+
+  .section-title {
+    min-width: 0;
+    width: 100%;
+    font-size: 26px;
+  }
+
+  /* No room past the shingle on a narrow page: the beam stays within it. */
+  .section-title::before {
+    left: 0;
+    right: 0;
+  }
+
+  .parchment {
+    padding: 28px 26px 40px;
+  }
+
+  .markdown {
+    padding: 28px 26px 42px;
+    font-size: 18px;
+  }
+}

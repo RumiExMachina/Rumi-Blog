@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-13T22:30:47.694Z",
+  "tags": [
+    "Dev Log",
+    "Initial Post",
+    "Introduction"
+  ],
+  "cover": "cover.png",
+  "en": {
+    "title": "Welcome to my little Blog!",
+    "summary": "Welcome to my blog. Name is Rumi, hope you find useful information here and have fun!"
+  },
+  "pt-BR": {
+    "title": "Boas-vindas ao meu pequeno Blog!",
+    "summary": "Boas-vindas ao meu blog. Meu nome é Rumi e espero que encontre informações úteis e divirta-se por aqui!"
+  }
+}
