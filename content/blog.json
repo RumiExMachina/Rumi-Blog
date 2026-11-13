@@ -1,0 +1,13 @@
+{
+  "theme": "hearthmakers",
+  "address": "https://rumiexmachina.github.io/Rumi-Blog",
+  "author": "RumiExMachina",
+  "en": {
+    "title": "The Gearfinder - Rumi",
+    "description": "A small blog about the Gearfinder Studios leader and founder, Rumi."
+  },
+  "pt-BR": {
+    "title": "O Gearfinder - Rumi",
+    "description": "Um pequeno blog sobre o líder e fundador da Gearfinder, Rumi."
+  }
+}
