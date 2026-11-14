@@ -6,6 +6,7 @@
     "Introduction"
   ],
   "cover": "cover.png",
+  "featured": true,
   "en": {
     "title": "Welcome to my little Blog!",
     "summary": "Welcome to my blog. Name is Rumi, hope you find useful information here and have fun!"
